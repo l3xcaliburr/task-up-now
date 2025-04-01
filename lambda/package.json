@@ -1,0 +1,13 @@
+{
+  "name": "server-task-lambda",
+  "version": "1.0.0",
+  "description": "Lambda functions for ServerTask application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1107.0",
+    "uuid": "^8.3.2"
+  }
+}
