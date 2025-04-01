@@ -10,7 +10,7 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { createTask, uploadImage } from "../services/api";
+import { createTask, uploadImage, processImage } from "../services/api";
 
 const CreateTask = () => {
   const navigate = useNavigate();
@@ -49,11 +49,19 @@ const CreateTask = () => {
         ...formValues,
         hasImage: !!selectedFile,
         filename: selectedFile?.name,
+        fileType: selectedFile?.type, // Add this line
       });
 
       // If there's a file to upload and we got an upload URL
       if (selectedFile && newTask.imageUploadUrl) {
         await uploadImage(newTask.imageUploadUrl, selectedFile);
+
+        // After successful upload, trigger image analysis
+        try {
+          await processImage(newTask.taskId);
+        } catch (err) {
+          console.error("Error processing image:", err);
+        }
       }
 
       setError("");

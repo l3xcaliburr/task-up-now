@@ -38,9 +38,29 @@ export const deleteTask = async (taskId: string) => {
 };
 
 export const uploadImage = async (uploadUrl: string, file: File) => {
-  await axios.put(uploadUrl, file, {
-    headers: {
-      "Content-Type": file.type,
-    },
-  });
+  try {
+    console.log("Uploading image to S3...");
+
+    // Use fetch API directly instead of axios
+    const response = await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error response from S3:", errorText);
+      throw new Error(`Upload failed with status: ${response.status}`);
+    }
+
+    console.log("Image upload successful");
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+};
+
+export const processImage = async (taskId: string) => {
+  const response = await api.post(`/tasks/${taskId}/process-image`);
+  return response.data;
 };

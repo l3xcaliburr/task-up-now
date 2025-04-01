@@ -16,9 +16,13 @@ import {
   Alert,
 } from "@mui/material";
 import { format } from "date-fns";
-import { getTask, updateTask, uploadImage } from "../services/api";
+import {
+  getTask,
+  updateTask,
+  uploadImage,
+  processImage,
+} from "../services/api";
 import { SelectChangeEvent } from "@mui/material/Select";
-
 interface Task {
   taskId: string;
   title: string;
@@ -103,11 +107,20 @@ const TaskDetail = () => {
         ...formValues,
         hasNewImage: !!selectedFile,
         filename: selectedFile?.name,
+        fileType: selectedFile?.type,
       });
 
       // If there's a new file to upload and we got an upload URL
       if (selectedFile && updatedTask.imageUploadUrl) {
         await uploadImage(updatedTask.imageUploadUrl, selectedFile);
+
+        // After successful upload, trigger image analysis
+        try {
+          await processImage(taskId);
+        } catch (err) {
+          console.error("Error processing image:", err);
+          // We don't want to fail the entire task update if just the image analysis fails
+        }
       }
 
       setTask(updatedTask);

@@ -49,12 +49,27 @@ export class ServerTaskStack extends cdk.Stack {
             s3.HttpMethods.GET,
             s3.HttpMethods.PUT,
             s3.HttpMethods.POST,
+            s3.HttpMethods.DELETE,
+            s3.HttpMethods.HEAD,
           ],
-          allowedOrigins: ["*"], // In production, restrict this to your domain
+          allowedOrigins: ["*"],
           allowedHeaders: ["*"],
           maxAge: 3000,
+          exposedHeaders: [
+            "ETag",
+            "x-amz-server-side-encryption",
+            "x-amz-request-id",
+            "x-amz-id-2",
+            "Content-Type", // Ensure Content-Type is in the exposed headers
+          ],
         },
       ],
+      blockPublicAccess: new s3.BlockPublicAccess({
+        blockPublicAcls: true,
+        blockPublicPolicy: false,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: false,
+      }),
     });
 
     // Create a role for Lambda with permissions to access DynamoDB and S3
@@ -107,6 +122,14 @@ export class ServerTaskStack extends cdk.Stack {
       },
     });
 
+    taskAttachmentsBucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        actions: ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+        principals: [new iam.ArnPrincipal(taskLambdaRole.roleArn)],
+        resources: [`${taskAttachmentsBucket.bucketArn}/*`],
+      })
+    );
+
     // Create API Gateway
     const api = new apigateway.RestApi(this, "TasksApi", {
       restApiName: "Tasks Service",
@@ -126,6 +149,12 @@ export class ServerTaskStack extends cdk.Stack {
     task.addMethod("GET", new apigateway.LambdaIntegration(taskFunction)); // Get task
     task.addMethod("PUT", new apigateway.LambdaIntegration(taskFunction)); // Update task
     task.addMethod("DELETE", new apigateway.LambdaIntegration(taskFunction)); // Delete task
+
+    const processImage = task.addResource("process-image");
+    processImage.addMethod(
+      "POST",
+      new apigateway.LambdaIntegration(taskFunction)
+    );
 
     // Output the API endpoint URL
     new cdk.CfnOutput(this, "ApiUrl", {
