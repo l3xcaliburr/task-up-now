@@ -1,7 +1,17 @@
 {
-  "name": "server-task-frontend",
-  "version": "0.1.0",
+  "name": "task-up-now-frontend",
+  "version": "1.0.0",
+  "description": "Modern React frontend for TaskUpNow - A serverless task management application",
   "private": true,
+  "keywords": [
+    "react",
+    "typescript",
+    "material-ui",
+    "task-management",
+    "frontend"
+  ],
+  "author": "TaskUpNow Contributors",
+  "license": "MIT",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",

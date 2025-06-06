@@ -1,9 +1,33 @@
 {
-  "name": "server-task",
-  "version": "0.1.0",
+  "name": "task-up-now",
+  "version": "1.0.0",
+  "description": "A modern serverless task management application built with React, AWS Lambda, DynamoDB, and S3",
+  "main": "bin/server-task.js",
   "bin": {
-    "server-task": "bin/server-task.js"
+    "task-up-now": "bin/server-task.js"
   },
+  "keywords": [
+    "serverless",
+    "aws",
+    "react",
+    "typescript",
+    "cdk",
+    "lambda",
+    "dynamodb",
+    "s3",
+    "task-management",
+    "material-ui"
+  ],
+  "author": "TaskUpNow Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/l3xcaliburr/taskup-now.git"
+  },
+  "bugs": {
+    "url": "https://github.com/l3xcaliburr/taskup-now/issues"
+  },
+  "homepage": "https://github.com/l3xcaliburr/taskup-now#readme",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",

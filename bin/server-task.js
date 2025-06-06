@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const cdk = require("aws-cdk-lib");
+const server_task_stack_1 = require("../lib/server-task-stack");
+const frontend_stack_1 = require("../lib/frontend-stack");
+const app = new cdk.App();
+// Deploy the backend stack
+new server_task_stack_1.TaskUpNowStack(app, "TaskUpNowStack", {
+/* If you don't specify 'env', this stack will be environment-agnostic.
+ * Account/Region-dependent features and context lookups will not work,
+ * but a single synthesized template can be deployed anywhere. */
+/* Uncomment the next line to specialize this stack for the AWS Account
+ * and Region that are implied by the current CLI configuration. */
+// env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+/* Uncomment the next line if you know exactly what Account and Region you
+ * want to deploy the stack to. */
+// env: { account: '123456789012', region: 'us-east-1' },
+/* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+});
+// Deploy the frontend stack
+new frontend_stack_1.TaskUpNowFrontendStack(app, "TaskUpNowFrontendStack", {
+    // Use the same environment as the backend
+    env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION,
+    },
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VydmVyLXRhc2suanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJzZXJ2ZXItdGFzay50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFDQSxtQ0FBbUM7QUFDbkMsZ0VBQTBEO0FBQzFELDBEQUErRDtBQUUvRCxNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUUxQiwyQkFBMkI7QUFDM0IsSUFBSSxrQ0FBYyxDQUFDLEdBQUcsRUFBRSxnQkFBZ0IsRUFBRTtBQUN4Qzs7aUVBRWlFO0FBQ2pFO21FQUNtRTtBQUNuRSw2RkFBNkY7QUFDN0Y7a0NBQ2tDO0FBQ2xDLHlEQUF5RDtBQUN6RCw4RkFBOEY7Q0FDL0YsQ0FBQyxDQUFDO0FBRUgsNEJBQTRCO0FBQzVCLElBQUksdUNBQXNCLENBQUMsR0FBRyxFQUFFLHdCQUF3QixFQUFFO0lBQ3hELDBDQUEwQztJQUMxQyxHQUFHLEVBQUU7UUFDSCxPQUFPLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxtQkFBbUI7UUFDeEMsTUFBTSxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsa0JBQWtCO0tBQ3ZDO0NBQ0YsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiIyEvdXNyL2Jpbi9lbnYgbm9kZVxuaW1wb3J0ICogYXMgY2RrIGZyb20gXCJhd3MtY2RrLWxpYlwiO1xuaW1wb3J0IHsgVGFza1VwTm93U3RhY2sgfSBmcm9tIFwiLi4vbGliL3NlcnZlci10YXNrLXN0YWNrXCI7XG5pbXBvcnQgeyBUYXNrVXBOb3dGcm9udGVuZFN0YWNrIH0gZnJvbSBcIi4uL2xpYi9mcm9udGVuZC1zdGFja1wiO1xuXG5jb25zdCBhcHAgPSBuZXcgY2RrLkFwcCgpO1xuXG4vLyBEZXBsb3kgdGhlIGJhY2tlbmQgc3RhY2tcbm5ldyBUYXNrVXBOb3dTdGFjayhhcHAsIFwiVGFza1VwTm93U3RhY2tcIiwge1xuICAvKiBJZiB5b3UgZG9uJ3Qgc3BlY2lmeSAnZW52JywgdGhpcyBzdGFjayB3aWxsIGJlIGVudmlyb25tZW50LWFnbm9zdGljLlxuICAgKiBBY2NvdW50L1JlZ2lvbi1kZXBlbmRlbnQgZmVhdHVyZXMgYW5kIGNvbnRleHQgbG9va3VwcyB3aWxsIG5vdCB3b3JrLFxuICAgKiBidXQgYSBzaW5nbGUgc3ludGhlc2l6ZWQgdGVtcGxhdGUgY2FuIGJlIGRlcGxveWVkIGFueXdoZXJlLiAqL1xuICAvKiBVbmNvbW1lbnQgdGhlIG5leHQgbGluZSB0byBzcGVjaWFsaXplIHRoaXMgc3RhY2sgZm9yIHRoZSBBV1MgQWNjb3VudFxuICAgKiBhbmQgUmVnaW9uIHRoYXQgYXJlIGltcGxpZWQgYnkgdGhlIGN1cnJlbnQgQ0xJIGNvbmZpZ3VyYXRpb24uICovXG4gIC8vIGVudjogeyBhY2NvdW50OiBwcm9jZXNzLmVudi5DREtfREVGQVVMVF9BQ0NPVU5ULCByZWdpb246IHByb2Nlc3MuZW52LkNES19ERUZBVUxUX1JFR0lPTiB9LFxuICAvKiBVbmNvbW1lbnQgdGhlIG5leHQgbGluZSBpZiB5b3Uga25vdyBleGFjdGx5IHdoYXQgQWNjb3VudCBhbmQgUmVnaW9uIHlvdVxuICAgKiB3YW50IHRvIGRlcGxveSB0aGUgc3RhY2sgdG8uICovXG4gIC8vIGVudjogeyBhY2NvdW50OiAnMTIzNDU2Nzg5MDEyJywgcmVnaW9uOiAndXMtZWFzdC0xJyB9LFxuICAvKiBGb3IgbW9yZSBpbmZvcm1hdGlvbiwgc2VlIGh0dHBzOi8vZG9jcy5hd3MuYW1hem9uLmNvbS9jZGsvbGF0ZXN0L2d1aWRlL2Vudmlyb25tZW50cy5odG1sICovXG59KTtcblxuLy8gRGVwbG95IHRoZSBmcm9udGVuZCBzdGFja1xubmV3IFRhc2tVcE5vd0Zyb250ZW5kU3RhY2soYXBwLCBcIlRhc2tVcE5vd0Zyb250ZW5kU3RhY2tcIiwge1xuICAvLyBVc2UgdGhlIHNhbWUgZW52aXJvbm1lbnQgYXMgdGhlIGJhY2tlbmRcbiAgZW52OiB7XG4gICAgYWNjb3VudDogcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfQUNDT1VOVCxcbiAgICByZWdpb246IHByb2Nlc3MuZW52LkNES19ERUZBVUxUX1JFR0lPTixcbiAgfSxcbn0pO1xuIl19

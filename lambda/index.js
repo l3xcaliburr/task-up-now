@@ -65,7 +65,11 @@ exports.handler = async (event) => {
   try {
     const { httpMethod, resource, pathParameters, body } = event;
     const path = resource;
-    const userId = event.headers.Authorization || "demo-user"; // In a real app, extract from JWT
+    // Extract user ID from Authorization header
+    // In production, this should validate JWT and extract user ID
+    const authHeader =
+      event.headers.Authorization || event.headers.authorization;
+    const userId = authHeader || `demo-user-${Date.now()}`; // Generate unique demo user for development
 
     // Create a new task
     if (httpMethod === "POST" && path === "/tasks") {
@@ -242,29 +246,65 @@ exports.handler = async (event) => {
         imageUrl = await getSignedUrl(imageKey, "getObject");
       }
 
-      // Update the task
+      // Build update expression dynamically for partial updates
+      const updateExpressions = [];
+      const expressionAttributeNames = {};
+      const expressionAttributeValues = {};
+
+      // Always update timestamp
+      updateExpressions.push("updatedAt = :updatedAt");
+      expressionAttributeValues[":updatedAt"] = timestamp;
+
+      // Update fields only if provided
+      if (taskData.title !== undefined) {
+        updateExpressions.push("title = :title");
+        expressionAttributeValues[":title"] = taskData.title;
+      }
+
+      if (taskData.description !== undefined) {
+        updateExpressions.push("description = :description");
+        expressionAttributeValues[":description"] = taskData.description;
+      }
+
+      if (taskData.dueDate !== undefined) {
+        updateExpressions.push("dueDate = :dueDate");
+        expressionAttributeValues[":dueDate"] = taskData.dueDate;
+      }
+
+      if (taskData.status !== undefined) {
+        updateExpressions.push("#taskStatus = :status");
+        expressionAttributeNames["#taskStatus"] = "status";
+        expressionAttributeValues[":status"] = taskData.status;
+      }
+
+      // Update image-related fields if processing images
+      if (taskData.hasNewImage !== undefined) {
+        updateExpressions.push("imageKey = :imageKey");
+        expressionAttributeValues[":imageKey"] = imageKey;
+
+        updateExpressions.push("imageLabels = :imageLabels");
+        expressionAttributeValues[":imageLabels"] = imageLabels;
+      }
+
       const updateParams = {
         TableName: TABLE_NAME,
         Key: {
           taskId,
           userId,
         },
-        UpdateExpression:
-          "set title = :title, description = :description, dueDate = :dueDate, #taskStatus = :status, updatedAt = :updatedAt, imageKey = :imageKey, imageLabels = :imageLabels",
-        ExpressionAttributeNames: {
-          "#taskStatus": "status",
-        },
-        ExpressionAttributeValues: {
-          ":title": taskData.title,
-          ":description": taskData.description || "",
-          ":dueDate": taskData.dueDate || null,
-          ":status": taskData.status || existingTask.Item.status,
-          ":updatedAt": timestamp,
-          ":imageKey": imageKey,
-          ":imageLabels": imageLabels,
-        },
+        UpdateExpression: `set ${updateExpressions.join(", ")}`,
+        ExpressionAttributeNames:
+          Object.keys(expressionAttributeNames).length > 0
+            ? expressionAttributeNames
+            : undefined,
+        ExpressionAttributeValues: expressionAttributeValues,
         ReturnValues: "ALL_NEW",
       };
+
+      // Remove undefined properties
+      if (!updateParams.ExpressionAttributeNames) {
+        delete updateParams.ExpressionAttributeNames;
+      }
 
       const result = await dynamoDB.update(updateParams).promise();
 
